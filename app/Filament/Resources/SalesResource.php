@@ -61,9 +61,7 @@ class SalesResource extends Resource
                     ->label('Total Penjualan')
                     ->getStateUsing(function ($record) {
                         $total = $record->salesItems->sum(function ($item) {
-                            $unitConversionFactor = $item->unit ? $item->unit->conversion_factor : 1;
-
-                            return $item->quantity * $item->price_per_unit * $unitConversionFactor;
+                            return $item->quantity * $item->price_per_unit;
                         });
 
                         return 'IDR ' . number_format($total, 2, ',', '.');

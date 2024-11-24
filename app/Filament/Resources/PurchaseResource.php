@@ -64,9 +64,7 @@ class PurchaseResource extends Resource
                     ->label('Total Pembelian')
                     ->getStateUsing(function ($record) {
                         $total = $record->purchaseItems->sum(function ($item) {
-                            $unitConversionFactor = $item->unit ? $item->unit->conversion_factor : 1;
-
-                            return $item->quantity * $item->price_per_unit * $unitConversionFactor;
+                            return $item->quantity * $item->price_per_unit;
                         });
 
                         return 'IDR ' . number_format($total, 2, ',', '.');

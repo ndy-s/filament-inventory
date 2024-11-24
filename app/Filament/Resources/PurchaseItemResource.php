@@ -77,7 +77,7 @@ class PurchaseItemResource extends Resource
                 Forms\Components\Select::make('unit_id')
                     ->label(__('filament.resources.purchase_item.fields.unit_id'))
                     ->relationship('unit', 'unit_name', function ($query) {
-                        $query->where('conversion_factor', '>', 0);
+                        $query->where('conversion_factor', '>', 0)->orderBy('conversion_factor', 'asc');
                     })
                     ->options(function (callable $get) {
                         $productId = $get('product_id');
@@ -88,6 +88,7 @@ class PurchaseItemResource extends Resource
                         return Unit::query()
                             ->where('product_id', $productId)
                             ->where('conversion_factor', '>', 0)
+                            ->orderBy('conversion_factor', 'asc')
                             ->get()
                             ->mapWithKeys(function ($unit) {
                                 return [$unit->id => $unit->unit_name . ' (' . $unit->product->name . ')'];
