@@ -63,7 +63,7 @@ class ProductResource extends Resource
                             return $conversion->unit_name;
                         })->implode(', ');
                     })
-                    ->searchable(),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('notes')
                     ->label(__('filament.resources.product.fields.notes'))
                     ->html()
