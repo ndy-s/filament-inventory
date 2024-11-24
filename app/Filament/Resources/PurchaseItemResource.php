@@ -123,26 +123,31 @@ class PurchaseItemResource extends Resource
                 Tables\Columns\TextColumn::make('purchase.code')
                     ->label(__('filament.resources.purchase_item.fields.purchase_id'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('product.name')
                     ->label(__('filament.resources.purchase_item.fields.product_id'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label(__('filament.resources.purchase_item.fields.quantity'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('unit.unit_name')
                     ->label(__('filament.resources.purchase_item.fields.unit_id'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price_per_unit')
                     ->label(__('filament.resources.purchase_item.fields.price_per_unit'))
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('discount')
                     ->label(__('filament.resources.purchase_item.fields.discount'))
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()

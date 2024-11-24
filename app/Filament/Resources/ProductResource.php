@@ -52,7 +52,8 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('notes')
                     ->label(__('filament.resources.product.fields.notes'))
                     ->html()
-                    ->limit(50),
+                    ->limit(50)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()

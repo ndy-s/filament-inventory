@@ -63,11 +63,13 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('latitude')
                     ->label(__('filament.resources.customer.fields.latitude'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('longitude')
                     ->label(__('filament.resources.customer.fields.longitude'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()

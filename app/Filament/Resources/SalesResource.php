@@ -55,7 +55,8 @@ class SalesResource extends Resource
                 Tables\Columns\TextColumn::make('date')
                     ->label(__('filament.resources.sales.fields.date'))
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('sales_items')
                     ->label('Total Penjualan')
                     ->getStateUsing(function ($record) {
@@ -67,7 +68,8 @@ class SalesResource extends Resource
 
                         return 'IDR ' . number_format($total, 2, ',', '.');
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()

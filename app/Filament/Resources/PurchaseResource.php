@@ -48,15 +48,18 @@ class PurchaseResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->label(__('filament.resources.purchase.fields.code'))
+                    ->searchable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('supplier.name')
                     ->label(__('filament.resources.purchase.fields.supplier_id'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('date')
                     ->label(__('filament.resources.purchase.fields.date'))
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('purchase_items')
                     ->label('Total Pembelian')
                     ->getStateUsing(function ($record) {
@@ -68,7 +71,8 @@ class PurchaseResource extends Resource
 
                         return 'IDR ' . number_format($total, 2, ',', '.');
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('invoice_image')
                     ->label(__('filament.resources.purchase.fields.invoice_image'))
                     ->disk('public')

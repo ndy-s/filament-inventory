@@ -49,14 +49,17 @@ class InventoryResource extends Resource
                 Tables\Columns\TextColumn::make('product.name')
                     ->label(__('filament.resources.inventory.fields.product_id'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label(__('filament.resources.inventory.fields.quantity'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('product.baseUnit.unit_name')
                     ->label(__('filament.resources.product.fields.base_unit_id'))
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()

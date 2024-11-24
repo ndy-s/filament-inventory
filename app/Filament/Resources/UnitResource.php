@@ -48,14 +48,16 @@ class UnitResource extends Resource
                 Tables\Columns\TextColumn::make('product.name')
                     ->label(__('filament.resources.unit.fields.product_id'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('unit_name')
                     ->label(__('filament.resources.unit.fields.unit_name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('conversion_factor')
                     ->label(__('filament.resources.unit.fields.conversion_factor'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()
