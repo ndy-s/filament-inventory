@@ -78,8 +78,7 @@ class InventoryResource extends Resource
                             return '';
                         })->filter()->implode(', ');
                     })
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()
