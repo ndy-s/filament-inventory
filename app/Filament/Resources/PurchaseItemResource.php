@@ -47,7 +47,9 @@ class PurchaseItemResource extends Resource
             ->schema([
                 Forms\Components\Select::make('purchase_id')
                     ->label(__('filament.resources.purchase_item.fields.purchase_id'))
-                    ->relationship('purchase', 'code')
+                    ->relationship('purchase', 'code', function ($query) {
+                        $query->orderBy('created_at', 'desc');
+                    })
                     ->createOptionForm(Purchase::getForm())
                     ->editOptionForm(Purchase::getForm())
                     ->searchable()
@@ -63,6 +65,20 @@ class PurchaseItemResource extends Resource
                     })
                     ->createOptionForm(Product::getForm())
                     ->editOptionForm(Product::getForm())
+                    ->options(function () {
+                        return Product::query()->whereNotNull('base_unit_id')
+                            ->whereHas('baseUnit', function ($unitQuery) {
+                                $unitQuery->where('conversion_factor', '>', 0);
+                            })
+                            ->get()
+                            ->mapWithKeys(function ($product) {
+                                $notes = $product->notes ? strip_tags($product->notes) : null;
+
+                                $label = $notes ? $product->name . ' (' . $notes . ')' : $product->name;
+
+                                return [$product->id => $label];
+                            });
+                    })
                     ->searchable()
                     ->preload()
                     ->required()
@@ -170,7 +186,8 @@ class PurchaseItemResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

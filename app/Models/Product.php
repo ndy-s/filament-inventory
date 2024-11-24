@@ -97,7 +97,6 @@ class Product extends Model
                                 });
                         })
                         ->createOptionForm(Unit::getForm())
-                        ->editOptionForm(Unit::getForm())
                         ->searchable()
                         ->preload()
                         ->default(null),

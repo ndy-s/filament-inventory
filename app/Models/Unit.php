@@ -56,6 +56,15 @@ class Unit extends Model
                         }
                     }
                     return false;
+                })
+                ->options(function () {
+                    return Product::all()->mapWithKeys(function ($product) {
+                        $notes = $product->notes ? strip_tags($product->notes) : null;
+
+                        $label = $notes ? $product->name . ' (' . $notes . ')' : $product->name;
+
+                        return [$product->id => $label];
+                    });
                 }),
             TextInput::make('unit_name')
                 ->label(__('filament.resources.unit.fields.unit_name'))

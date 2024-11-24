@@ -60,6 +60,26 @@ class InventoryResource extends Resource
                     ->label(__('filament.resources.product.fields.base_unit_id'))
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('unit_conversions')
+                    ->label(__('Sisa Produk (Satuan)'))
+                    ->getStateUsing(function ($record) {
+                        $conversions = $record->product->units()
+                            ->orderBy('conversion_factor', 'asc')
+                            ->get();
+
+                        return $conversions->map(function ($conversion) use ($record) {
+                            if ($conversion->unit_name !== $record->product->baseUnit->unit_name && $conversion->conversion_factor > 0) {
+                                $convertedQuantity = $record->quantity / $conversion->conversion_factor;
+                                $convertedQuantity = round($convertedQuantity, 3);
+
+                                return $convertedQuantity . ' ' . $conversion->unit_name;
+                            }
+
+                            return '';
+                        })->filter()->implode(', ');
+                    })
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()

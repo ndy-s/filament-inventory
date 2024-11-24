@@ -49,6 +49,21 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('baseUnit.unit_name')
                     ->label(__('filament.resources.product.fields.base_unit_id'))
                     ->searchable(),
+                Tables\Columns\TextColumn::make('other_units')
+                    ->label(__('Satuan Lainnya'))
+                    ->getStateUsing(function ($record) {
+                        $conversions = $record->units()
+                            ->when($record->baseUnit, function ($query) use ($record) {
+                                return $query->where('unit_name', '!=', $record->baseUnit->unit_name);
+                            })
+                            ->orderBy('conversion_factor', 'asc')
+                            ->get();
+
+                        return $conversions->map(function ($conversion) {
+                            return $conversion->unit_name;
+                        })->implode(', ');
+                    })
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('notes')
                     ->label(__('filament.resources.product.fields.notes'))
                     ->html()

@@ -48,7 +48,9 @@ class SalesItemResource extends Resource
             ->schema([
                 Forms\Components\Select::make('sales_id')
                     ->label(__('filament.resources.sales_item.fields.sales_id'))
-                    ->relationship('sales', 'code')
+                    ->relationship('sales', 'code', function ($query) {
+                        $query->orderBy('created_at', 'desc');
+                    })
                     ->createOptionForm(Sales::getForm())
                     ->editOptionForm(Sales::getForm())
                     ->searchable()
@@ -64,6 +66,20 @@ class SalesItemResource extends Resource
                     })
                     ->createOptionForm(Product::getForm())
                     ->editOptionForm(Product::getForm())
+                    ->options(function () {
+                        return Product::query()->whereNotNull('base_unit_id')
+                            ->whereHas('baseUnit', function ($unitQuery) {
+                                $unitQuery->where('conversion_factor', '>', 0);
+                            })
+                            ->get()
+                            ->mapWithKeys(function ($product) {
+                                $notes = $product->notes ? strip_tags($product->notes) : null;
+
+                                $label = $notes ? $product->name . ' (' . $notes . ')' : $product->name;
+
+                                return [$product->id => $label];
+                            });
+                    })
                     ->searchable()
                     ->preload()
                     ->required()
@@ -190,7 +206,8 @@ class SalesItemResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
