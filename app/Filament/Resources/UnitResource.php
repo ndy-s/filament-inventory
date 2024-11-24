@@ -80,9 +80,7 @@ class UnitResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort(function ($query, $direction) {
-                $query->orderBy('product.name')->orderBy('conversion_factor');
-            });
+            ->defaultSort('product.name', 'asc');
     }
 
     public static function getRelations(): array
