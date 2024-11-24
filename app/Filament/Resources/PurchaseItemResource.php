@@ -89,7 +89,8 @@ class PurchaseItemResource extends Resource
                 Forms\Components\TextInput::make('quantity')
                     ->label(__('filament.resources.purchase_item.fields.quantity'))
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->step('any'),
                 Forms\Components\Select::make('unit_id')
                     ->label(__('filament.resources.purchase_item.fields.unit_id'))
                     ->relationship('unit', 'unit_name', function ($query) {

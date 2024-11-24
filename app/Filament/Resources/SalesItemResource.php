@@ -91,6 +91,7 @@ class SalesItemResource extends Resource
                     ->label(__('filament.resources.sales_item.fields.quantity'))
                     ->required()
                     ->numeric()
+                    ->step('any')
                     ->helperText(function (callable $get) {
                         $productId = $get('product_id');
                         $unitId = $get('unit_id');

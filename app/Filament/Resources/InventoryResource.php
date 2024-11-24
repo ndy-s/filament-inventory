@@ -70,7 +70,7 @@ class InventoryResource extends Resource
                         return $conversions->map(function ($conversion) use ($record) {
                             if ($conversion->unit_name !== $record->product->baseUnit->unit_name && $conversion->conversion_factor > 0) {
                                 $convertedQuantity = $record->quantity / $conversion->conversion_factor;
-                                $convertedQuantity = round($convertedQuantity, 3);
+                                $convertedQuantity = round($convertedQuantity, 2);
 
                                 return $convertedQuantity . ' ' . $conversion->unit_name;
                             }
@@ -120,7 +120,8 @@ class InventoryResource extends Resource
             ])
             ->bulkActions([
                 //
-            ]);
+            ])
+            ->defaultSort('product.name', 'asc');
     }
 
     public static function getRelations(): array
