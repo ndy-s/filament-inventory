@@ -69,8 +69,7 @@ class PurchaseResource extends Resource
 
                         return 'IDR ' . number_format($total, 2, ',', '.');
                     })
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
                 Tables\Columns\ImageColumn::make('invoice_image')
                     ->label(__('filament.resources.purchase.fields.invoice_image'))
                     ->disk('public')

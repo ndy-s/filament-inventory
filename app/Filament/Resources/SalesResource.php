@@ -66,8 +66,7 @@ class SalesResource extends Resource
 
                         return 'IDR ' . number_format($total, 2, ',', '.');
                     })
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()
