@@ -40,11 +40,10 @@ class Purchase extends Model
         'date' => 'date',
     ];
 
-
     protected static function booted(): void
     {
         static::creating(function ($purchase) {
-            $purchase->code = 'PUR-' . now()->format('dmy') . '-' . strtoupper(Str::random(3));
+            $purchase->code = 'PUR/' . now()->format('my') . '/' . str_pad($purchase->supplier_id, 2, '0', STR_PAD_LEFT) . '/' . strtoupper(Str::random(3));
         });
     }
 
