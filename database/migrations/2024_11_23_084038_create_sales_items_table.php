@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('sales_id');
             $table->foreignId('product_id');
             $table->integer('quantity');
-            $table->string('unit');
+            $table->foreignId('unit_id');
             $table->decimal('price_per_unit', 8, 2);
             $table->decimal('discount', 8, 2)->default(0);
             $table->timestamps();

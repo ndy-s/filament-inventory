@@ -46,7 +46,17 @@ class Unit extends Model
                 ->relationship('product', 'name')
                 ->searchable()
                 ->preload()
-                ->required(),
+                ->required()
+                ->disabled(function (callable $get) {
+                    $unitId = $get('id');
+                    if ($unitId) {
+                        $unit = Unit::query()->find($unitId);
+                        if ($unit && $unit->product_id) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }),
             TextInput::make('unit_name')
                 ->label(__('filament.resources.unit.fields.unit_name'))
                 ->required()

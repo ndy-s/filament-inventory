@@ -3,35 +3,42 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SalesResource\Pages;
-use App\Filament\Resources\SalesResource\RelationManagers;
 use App\Models\Sales;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SalesResource extends Resource
 {
     protected static ?string $model = Sales::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.navigation.sales');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 8;
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.sales.plural');
+    }
+
+    public static function getLabel(): string
+    {
+        return __('filament.resources.sales.singular');
+    }
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('code')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'name')
-                    ->required(),
-                Forms\Components\DatePicker::make('date')
-                    ->required(),
-            ]);
+        return $form->schema(Sales::getForm());
     }
 
     public static function table(Table $table): Table
@@ -39,18 +46,35 @@ class SalesResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->label(__('filament.resources.sales.fields.code'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
+                    ->label(__('filament.resources.sales.fields.customer_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
+                    ->label(__('filament.resources.sales.fields.date'))
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('sales_items')
+                    ->label('Total Penjualan')
+                    ->getStateUsing(function ($record) {
+                        $total = $record->salesItems->sum(function ($item) {
+                            $unitConversionFactor = $item->unit ? $item->unit->conversion_factor : 1;
+
+                            return $item->quantity * $item->price_per_unit * $unitConversionFactor;
+                        });
+
+                        return 'IDR ' . number_format($total, 2, ',', '.');
+                    })
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('filament.general.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('filament.general.fields.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

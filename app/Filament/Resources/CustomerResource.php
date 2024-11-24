@@ -38,57 +38,7 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Grid::make(1)
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->label(__('filament.resources.customer.fields.name'))
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('contact_person')
-                            ->label(__('filament.resources.customer.fields.contact_person'))
-                            ->helperText(__('filament.resources.customer.fields.contact_person_helper'))
-                            ->maxLength(255)
-                            ->default(null),
-                    ]),
-
-                Grid::make(2)
-                    ->schema([
-                        Forms\Components\TextInput::make('phone')
-                            ->label(__('filament.resources.customer.fields.phone'))
-                            ->tel()
-                            ->maxLength(255)
-                            ->default(null),
-                        Forms\Components\TextInput::make('email')
-                            ->label(__('filament.resources.customer.fields.email'))
-                            ->email()
-                            ->maxLength(255)
-                            ->default(null),
-                    ]),
-
-                Grid::make(1)
-                    ->schema([
-                        Forms\Components\TextInput::make('address')
-                            ->label(__('filament.resources.customer.fields.address'))
-                            ->maxLength(255)
-                            ->default(null),
-                    ]),
-
-                Grid::make(2)
-                    ->schema([
-                        Forms\Components\TextInput::make('latitude')
-                            ->label(__('filament.resources.customer.fields.latitude'))
-                            ->helperText(__('filament.resources.customer.fields.latitude_helper'))
-                            ->numeric()
-                            ->default(null),
-                        Forms\Components\TextInput::make('longitude')
-                            ->label(__('filament.resources.customer.fields.longitude'))
-                            ->helperText(__('filament.resources.customer.fields.longitude_helper'))
-                            ->numeric()
-                            ->default(null),
-                    ]),
-            ]);
+        return $form->schema(Customer::getForm());
     }
 
     public static function table(Table $table): Table

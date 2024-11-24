@@ -41,7 +41,7 @@ class PurchaseItem extends Model
     protected static function booted(): void
     {
         static::saving(function ($purchaseItem) {
-            // Get the base unit conversion factor for the product
+            // Get the base unit conversion factor for the product and unit
             $product = $purchaseItem->product;
             $unit = $purchaseItem->unit;
 
@@ -49,16 +49,36 @@ class PurchaseItem extends Model
                 throw new \Exception('Product or unit not found.');
             }
 
-            // Convert quantity to the base unit
-            $convertedQuantity = $purchaseItem->quantity * $unit->conversion_factor;
+            // Fetch the existing record if it exists (for edit scenario)
+            $originalItem = $purchaseItem->getOriginal();
+
+            $originalConvertedQuantity = 0;
+            if ($originalItem && isset($originalItem['quantity']) && isset($originalItem['unit_id'])) {
+                $originalUnit = Unit::query()->find($originalItem['unit_id']);
+                if ($originalUnit) {
+                    $originalConvertedQuantity = $originalItem['quantity'] * $originalUnit->conversion_factor;
+                }
+            }
+
+            // Convert the new quantity to the base unit
+            $newConvertedQuantity = $purchaseItem->quantity * $unit->conversion_factor;
+
+            // Calculate the difference to update inventory
+            $quantityDifference = $newConvertedQuantity - $originalConvertedQuantity;
 
             // Update inventory
             $inventory = Inventory::query()->firstOrNew([
                 'product_id' => $product->id,
             ]);
 
-            // Add converted quantity to the inventory
-            $inventory->quantity = ($inventory->quantity ?? 0) + $convertedQuantity;
+            // Add the difference to the inventory
+            $inventory->quantity = ($inventory->quantity ?? 0) + $quantityDifference;
+
+            // Prevent negative inventory
+            if ($inventory->quantity < 0) {
+                throw new \Exception('Inventory cannot have a negative quantity.');
+            }
+
             $inventory->save();
         });
 

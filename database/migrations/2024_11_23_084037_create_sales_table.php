@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->foreignId('customer_id');
-            $table->date('date');
+            $table->foreignId('customer_id')->nullable();
+            $table->date('date')->nullable();
             $table->timestamps();
         });
     }

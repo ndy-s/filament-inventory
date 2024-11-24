@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseItemResource\Pages;
+use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
@@ -10,6 +11,7 @@ use App\Models\Unit;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -39,7 +41,6 @@ class PurchaseItemResource extends Resource
         return __('filament.resources.purchase_item.singular');
     }
 
-
     public static function form(Form $form): Form
     {
         return $form
@@ -54,7 +55,12 @@ class PurchaseItemResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('product_id')
                     ->label(__('filament.resources.purchase_item.fields.product_id'))
-                    ->relationship('product', 'name')
+                    ->relationship('product', 'name', function ($query) {
+                        $query->whereNotNull('base_unit_id')
+                            ->whereHas('baseUnit', function ($unitQuery) {
+                                $unitQuery->where('conversion_factor', '>', 0);
+                            });
+                    })
                     ->createOptionForm(Product::getForm())
                     ->editOptionForm(Product::getForm())
                     ->searchable()
@@ -69,32 +75,44 @@ class PurchaseItemResource extends Resource
                     ->required()
                     ->numeric(),
                 Forms\Components\Select::make('unit_id')
-                    ->label(__('filament.resources.purchase_item.fields.unit'))
-                    ->relationship('unit', 'unit_name')
+                    ->label(__('filament.resources.purchase_item.fields.unit_id'))
+                    ->relationship('unit', 'unit_name', function ($query) {
+                        $query->where('conversion_factor', '>', 0);
+                    })
                     ->options(function (callable $get) {
                         $productId = $get('product_id');
                         if (!$productId) {
                             return [];
                         }
 
-                        return Unit::query()->where('product_id', $productId)
+                        return Unit::query()
+                            ->where('product_id', $productId)
+                            ->where('conversion_factor', '>', 0)
                             ->get()
                             ->mapWithKeys(function ($unit) {
                                 return [$unit->id => $unit->unit_name . ' (' . $unit->product->name . ')'];
                             });
                     })
+                    ->createOptionForm(Unit::getForm())
+                    ->editOptionForm(Unit::getForm())
                     ->searchable()
                     ->preload()
                     ->required(),
                 Forms\Components\TextInput::make('price_per_unit')
                     ->label(__('filament.resources.purchase_item.fields.price_per_unit'))
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('IDR')
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters([',']),
                 Forms\Components\TextInput::make('discount')
                     ->label(__('filament.resources.purchase_item.fields.discount'))
                     ->required()
                     ->numeric()
-                    ->default(0.00),
+                    ->default(0.00)
+                    ->prefix('IDR')
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters([',']),
             ]);
     }
 
@@ -103,11 +121,11 @@ class PurchaseItemResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('purchase.code')
-                    ->label(__('filament.resources.purchase.fields.code'))
+                    ->label(__('filament.resources.purchase_item.fields.purchase_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('filament.resources.product.fields.name'))
+                    ->label(__('filament.resources.purchase_item.fields.product_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
@@ -115,7 +133,7 @@ class PurchaseItemResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('unit.unit_name')
-                    ->label(__('filament.resources.unit.fields.unit_name'))
+                    ->label(__('filament.resources.purchase_item.fields.unit_id'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price_per_unit')
                     ->label(__('filament.resources.purchase_item.fields.price_per_unit'))
@@ -126,10 +144,12 @@ class PurchaseItemResource extends Resource
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('filament.general.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('filament.general.fields.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

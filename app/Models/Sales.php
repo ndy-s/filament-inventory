@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Sales extends Model
 {
@@ -34,6 +38,13 @@ class Sales extends Model
         'date' => 'date',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function ($sales) {
+            $sales->code = 'SAL-' . now()->format('dmy') . '-' . strtoupper(Str::random(3));
+        });
+    }
+
     public function salesItems(): HasMany
     {
         return $this->hasMany(SalesItem::class);
@@ -47,5 +58,27 @@ class Sales extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public static function getForm(): array
+    {
+        return [
+            TextInput::make('code')
+                ->label(__('filament.resources.sales.fields.code'))
+                ->maxLength(255)
+                ->disabled()
+                ->default(''),
+            Select::make('customer_id')
+                ->label(__('filament.resources.sales.fields.customer_id'))
+                ->relationship('customer', 'name')
+                ->createOptionForm(Customer::getForm())
+                ->editOptionForm(Customer::getForm())
+                ->searchable()
+                ->preload()
+                ->default(null),
+            DatePicker::make('date')
+                ->label(__('filament.resources.sales.fields.date'))
+                ->default(null),
+        ];
     }
 }

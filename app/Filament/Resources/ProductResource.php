@@ -47,7 +47,7 @@ class ProductResource extends Resource
                     ->label(__('filament.resources.product.fields.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('baseUnit.unit_name')
-                    ->label(__('filament.resources.product.fields.base_unit'))
+                    ->label(__('filament.resources.product.fields.base_unit_id'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('notes')
                     ->label(__('filament.resources.product.fields.notes'))

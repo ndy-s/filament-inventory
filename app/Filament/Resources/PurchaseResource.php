@@ -50,15 +50,40 @@ class PurchaseResource extends Resource
                     ->label(__('filament.resources.purchase.fields.code'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('supplier.name')
-                    ->label(__('filament.resources.supplier.fields.name'))
+                    ->label(__('filament.resources.purchase.fields.supplier_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
                     ->label(__('filament.resources.purchase.fields.date'))
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('purchase_items')
+                    ->label('Total Pembelian')
+                    ->getStateUsing(function ($record) {
+                        $total = $record->purchaseItems->sum(function ($item) {
+                            $unitConversionFactor = $item->unit ? $item->unit->conversion_factor : 1;
+
+                            return $item->quantity * $item->price_per_unit * $unitConversionFactor;
+                        });
+
+                        return 'IDR ' . number_format($total, 2, ',', '.');
+                    })
+                    ->sortable(),
                 Tables\Columns\ImageColumn::make('invoice_image')
-                    ->label(__('filament.resources.purchase.fields.invoice_image')),
+                    ->label(__('filament.resources.purchase.fields.invoice_image'))
+                    ->disk('public')
+                    ->width(100)
+                    ->height(100)
+                    ->url(function ($record) {
+                        if ($record->invoice_image) {
+                            return asset('storage/' . $record->invoice_image);
+                        }
+
+                        return null;
+                    })
+                    ->openUrlInNewTab(function ($record) {
+                        return (bool)$record->invoice_image;
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()

@@ -3,15 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\InventoryResource\Pages;
-use App\Filament\Resources\InventoryResource\RelationManagers;
 use App\Models\Inventory;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
 
 class InventoryResource extends Resource
 {
@@ -49,7 +47,7 @@ class InventoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('filament.resources.product.fields.name'))
+                    ->label(__('filament.resources.inventory.fields.product_id'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
@@ -57,7 +55,7 @@ class InventoryResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('product.baseUnit.unit_name')
-                    ->label(__('filament.resources.product.fields.base_unit'))
+                    ->label(__('filament.resources.product.fields.base_unit_id'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
@@ -74,7 +72,29 @@ class InventoryResource extends Resource
                 //
             ])
             ->actions([
-                //
+                Tables\Actions\Action::make('viewHistory')
+                    ->label('Riwayat Transaksi')
+                    ->modalHeading('Riwayat Transaksi Produk')
+                    ->modalWidth('4xl')
+                    ->modalSubmitAction(false)
+                    ->modalContent(function ($record) {
+                        $purchaseItems = $record->product->purchaseItems()
+                            ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
+                            ->select('purchase_items.*', 'purchases.date as transaction_date', DB::raw("'Purchase' as type"))
+                            ->get();
+
+                        $salesItems = $record->product->salesItems()
+                            ->join('sales', 'sales_items.sales_id', '=', 'sales.id')
+                            ->select('sales_items.*', 'sales.date as transaction_date', DB::raw("'Sale' as type"))
+                            ->get();
+
+                        $history = $purchaseItems->merge($salesItems)->sortByDesc('transaction_date');
+
+                        return view('filament.resources.inventory.history-modal', [
+                            'history' => $history,
+                        ]);
+                    })
+                    ->icon('heroicon-o-clock')
             ])
             ->bulkActions([
                 //

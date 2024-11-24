@@ -80,10 +80,15 @@ class Purchase extends Model
                 ->preload()
                 ->default(null),
             DatePicker::make('date')
-                ->label(__('filament.resources.purchase.fields.date')),
+                ->label(__('filament.resources.purchase.fields.date'))
+                ->default(null),
             FileUpload::make('invoice_image')
                 ->label(__('filament.resources.purchase.fields.invoice_image'))
-                ->image(),
+                ->disk('public')
+                ->directory('purchase')
+                ->image()
+                ->openable()
+                ->required(),
         ];
     }
 }

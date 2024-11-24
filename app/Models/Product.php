@@ -52,9 +52,19 @@ class Product extends Model
         return $this->belongsToMany(Purchase::class);
     }
 
+    public function purchaseItems(): HasMany
+    {
+        return $this->hasMany(PurchaseItem::class);
+    }
+
     public function sales(): BelongsToMany
     {
         return $this->belongsToMany(Sales::class);
+    }
+
+    public function salesItems(): HasMany
+    {
+        return $this->hasMany(SalesItem::class);
     }
 
     public static function getForm(): array
@@ -67,14 +77,27 @@ class Product extends Model
                         ->required()
                         ->maxLength(255),
                     Select::make('base_unit_id')
-                        ->label(__('filament.resources.product.fields.base_unit'))
-                        ->helperText(__('filament.resources.product.fields.base_unit_helper'))
-                        ->options(function () {
-                            return Unit::all()
+                        ->label(__('filament.resources.product.fields.base_unit_id'))
+                        ->helperText(__('filament.resources.product.fields.base_unit_id_helper'))
+                        ->relationship('baseUnit', 'unit_name', function ($query) {
+                            $query->where('conversion_factor', 1);
+                        })
+                        ->options(function (callable $get) {
+                            $productName = $get('name');
+
+                            return Unit::query()->whereHas('product', function ($query) use ($productName) {
+                                $query->where('name', $productName);
+                            })
+                                ->where('conversion_factor', 1)
+                                ->get()
                                 ->mapWithKeys(function ($unit) {
-                                    return [$unit->id => $unit->unit_name . ' (' . $unit->product->name . ')'];
+                                    return [
+                                        $unit->id => $unit->product->name . ' - ' . $unit->unit_name . ' (Factor: ' . $unit->conversion_factor . ')'
+                                    ];
                                 });
                         })
+                        ->createOptionForm(Unit::getForm())
+                        ->editOptionForm(Unit::getForm())
                         ->searchable()
                         ->preload()
                         ->default(null),
