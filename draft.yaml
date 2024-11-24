@@ -1,0 +1,75 @@
+models:
+  Product:
+    name: string
+    base_unit_id: id nullable
+    notes: text nullable
+    relationships:
+      hasMany: Unit
+      belongsToMany: Purchase, Sales
+
+  Unit:
+    product_id: id
+    unit_name: string
+    conversion_factor: integer default:0
+    relationships:
+      belongsTo: Product
+
+  Supplier:
+    name: string
+    contact_person: string nullable
+    phone: string nullable
+    email: string nullable
+    address: string nullable
+    relationships:
+      hasMany: Purchase
+
+  Purchase:
+    code: string
+    supplier_id: id nullable
+    date: date nullable
+    invoice_image: string nullable
+    relationships:
+      hasMany: PurchaseItem
+      belongsToMany: Product
+
+  PurchaseItem:
+    purchase_id: id
+    product_id: id
+    quantity: integer
+    unit: string
+    price_per_unit: decimal:8,2
+    discount: decimal:8,2 default:0
+
+  Inventory:
+    product_id: id
+    purchase_item_id: id
+    quantity: integer
+    unit: string
+    price_per_unit: decimal:8,2
+
+  Customer:
+    name: string
+    contact_person: string nullable
+    phone: string nullable
+    email: string nullable
+    address: string nullable
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    relationships:
+      hasMany: Sales
+
+  Sales:
+    code: string
+    customer_id: id
+    date: date
+    relationships:
+      hasMany: SalesItem
+      belongsToMany: Product
+
+  SalesItem:
+    sales_id: id
+    product_id: id
+    quantity: integer
+    unit: string
+    price_per_unit: decimal:8,2
+    discount: decimal:8,2 default:0

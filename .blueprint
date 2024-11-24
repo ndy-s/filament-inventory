@@ -1,0 +1,42 @@
+created:
+    - database/factories/ProductFactory.php
+    - database/factories/UnitFactory.php
+    - database/factories/SupplierFactory.php
+    - database/factories/PurchaseFactory.php
+    - database/factories/PurchaseItemFactory.php
+    - database/factories/InventoryFactory.php
+    - database/factories/CustomerFactory.php
+    - database/factories/SalesFactory.php
+    - database/factories/SalesItemFactory.php
+    - database/migrations/2024_11_23_084030_create_products_table.php
+    - database/migrations/2024_11_23_084031_create_units_table.php
+    - database/migrations/2024_11_23_084032_create_suppliers_table.php
+    - database/migrations/2024_11_23_084033_create_purchases_table.php
+    - database/migrations/2024_11_23_084034_create_purchase_items_table.php
+    - database/migrations/2024_11_23_084035_create_inventories_table.php
+    - database/migrations/2024_11_23_084036_create_customers_table.php
+    - database/migrations/2024_11_23_084037_create_sales_table.php
+    - database/migrations/2024_11_23_084038_create_sales_items_table.php
+    - database/migrations/2024_11_23_084039_create_product_purchase_sales_table.php
+    - database/migrations/2024_11_23_084040_create_product_purchase_table.php
+    - database/migrations/2024_11_23_084041_create_product_sales_table.php
+    - app/Models/Product.php
+    - app/Models/Unit.php
+    - app/Models/Supplier.php
+    - app/Models/Purchase.php
+    - app/Models/PurchaseItem.php
+    - app/Models/Inventory.php
+    - app/Models/Customer.php
+    - app/Models/Sales.php
+    - app/Models/SalesItem.php
+models:
+    User: { name: string, email: string, email_verified_at: 'timestamp nullable default:NULL', password: string, remember_token: 'string:100 nullable default:NULL' }
+    Product: { name: string, base_unit: 'string nullable', relationships: { hasMany: Unit, belongsToMany: 'Purchase Sales' } }
+    Unit: { product_id: id, unit_name: string, conversion_factor: 'integer default:0' }
+    Supplier: { name: string, contact_person: 'string nullable', phone: 'string nullable', email: 'string nullable', address: 'string nullable', relationships: { hasMany: Purchase } }
+    Purchase: { code: string, supplier_id: 'id nullable', date: 'date nullable', invoice_image: 'string nullable', relationships: { hasMany: PurchaseItem, belongsToMany: Product } }
+    PurchaseItem: { purchase_id: id, product_id: id, quantity: integer, unit: string, price_per_unit: 'decimal:8,2', discount: 'decimal:8,2 default:0' }
+    Inventory: { product_id: id, purchase_item_id: id, quantity: integer, unit: string, price_per_unit: 'decimal:8,2' }
+    Customer: { name: string, contact_person: 'string nullable', phone: 'string nullable', email: 'string nullable', address: 'string nullable', latitude: 'decimal:10,8 nullable', longitude: 'decimal:11,8 nullable', relationships: { hasMany: Sales } }
+    Sales: { code: string, customer_id: id, date: date, relationships: { hasMany: SalesItem, belongsToMany: Product } }
+    SalesItem: { sales_id: id, product_id: id, quantity: integer, unit: string, price_per_unit: 'decimal:8,2', discount: 'decimal:8,2 default:0' }
