@@ -79,7 +79,9 @@ class UnitResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('product.name', 'asc')
+            ->defaultSort('unit_name', 'asc');
     }
 
     public static function getRelations(): array
