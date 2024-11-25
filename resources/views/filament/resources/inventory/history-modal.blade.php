@@ -110,10 +110,10 @@
                                 {{ $item->unit->unit_name ?? 'Tidak Ada' }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 text-end">
-                                {{ number_format($item->price_per_unit, 2, ',', '.') }}
+                                Rp {{ number_format($item->price_per_unit, 2, ',', '.') }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm font-medium {{ $item->type === 'Purchase' ? 'text-custom-600 dark:text-custom-500' : 'text-info-600 dark:text-info-500'}} text-end">
-                                {{ number_format($item->quantity * $item->price_per_unit, 2, ',', '.') }}
+                                Rp {{ number_format($item->quantity * $item->price_per_unit, 2, ',', '.') }}
                             </td>
                         </tr>
                     @empty

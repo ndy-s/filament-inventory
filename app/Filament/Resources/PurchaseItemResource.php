@@ -157,12 +157,12 @@ class PurchaseItemResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price_per_unit')
                     ->label(__('filament.resources.purchase_item.fields.price_per_unit'))
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 2, ',', '.'))
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('discount')
                     ->label(__('filament.resources.purchase_item.fields.discount'))
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 2, ',', '.'))
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

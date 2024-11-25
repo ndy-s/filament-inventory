@@ -95,16 +95,16 @@
                                 {{ number_format($item->quantity ?? 0, 0, ',', '.') }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 text-end">
-                                {{ $item->unit->name ?? __('N/A') }}
+                                {{ $item->unit->unit_name ?? __('N/A') }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 text-end">
-                                {{ number_format($item->price_per_unit ?? 0, 2, ',', '.') }}
+                                Rp {{ number_format($item->price_per_unit ?? 0, 2, ',', '.') }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 text-end">
-                                {{ number_format($item->discount ?? 0, 2, ',', '.') }}
+                                Rp {{ number_format($item->discount ?? 0, 2, ',', '.') }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-2.5 text-sm font-medium text-custom-600 dark:text-custom-500 text-end">
-                                {{ number_format(($item->quantity * $item->price_per_unit) - ($item->discount ?? 0), 2, ',', '.') }}
+                                Rp {{ number_format(($item->quantity * $item->price_per_unit) - ($item->discount ?? 0), 2, ',', '.') }}
                             </td>
                         </tr>
                     @empty
