@@ -49,7 +49,7 @@ class SalesResource extends Resource
                     ->label(__('filament.resources.sales.fields.code'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label(__('filament.resources.sales.fields.customer_id'))
+                    ->label(__('filament.resources.sales.fields.customer'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('date')
@@ -58,7 +58,7 @@ class SalesResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sales_items')
-                    ->label('Total Penjualan')
+                    ->label(__('filament.resources.sales.fields.total'))
                     ->getStateUsing(function ($record) {
                         $total = $record->salesItems->sum(function ($item) {
                             return $item->quantity * $item->price_per_unit;
@@ -83,6 +83,16 @@ class SalesResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('details')
+                    ->label(__('filament.general.fields.details'))
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading(__('filament.resources.purchase.fields.details_heading'))
+                    ->modalWidth('4xl')
+                    ->modalSubmitAction(false)
+                    ->modalContent(fn ($record) => view('filament.resources.sales.sales-details', [
+                        'sales' => $record,
+                        'salesItems' => $record->salesItems,
+                    ])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

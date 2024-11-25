@@ -51,7 +51,7 @@ class PurchaseResource extends Resource
                     ->searchable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('supplier.name')
-                    ->label(__('filament.resources.purchase.fields.supplier_id'))
+                    ->label(__('filament.resources.purchase.fields.supplier'))
                     ->numeric()
                     ->sortable()
                     ->searchable(),
@@ -61,7 +61,7 @@ class PurchaseResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('purchase_items')
-                    ->label('Total Pembelian')
+                    ->label(__('filament.resources.purchase.fields.total'))
                     ->getStateUsing(function ($record) {
                         $total = $record->purchaseItems->sum(function ($item) {
                             return $item->quantity * $item->price_per_unit;
@@ -101,6 +101,16 @@ class PurchaseResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('details')
+                    ->label(__('filament.general.fields.details'))
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading(__('filament.resources.purchase.fields.details_heading'))
+                    ->modalWidth('4xl')
+                    ->modalSubmitAction(false)
+                    ->modalContent(fn ($record) => view('filament.resources.purchase.purchase-details', [
+                        'purchase' => $record,
+                        'purchaseItems' => $record->purchaseItems,
+                    ])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

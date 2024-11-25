@@ -46,7 +46,7 @@ class UnitResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('filament.resources.unit.fields.product_id'))
+                    ->label(__('filament.resources.unit.fields.product'))
                     ->numeric()
                     ->sortable()
                     ->searchable(),

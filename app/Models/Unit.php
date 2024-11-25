@@ -42,7 +42,7 @@ class Unit extends Model
     {
         return [
             Select::make('product_id')
-                ->label(__('filament.resources.unit.fields.product_id'))
+                ->label(__('filament.resources.unit.fields.product'))
                 ->relationship('product', 'name')
                 ->searchable()
                 ->preload()

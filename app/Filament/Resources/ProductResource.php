@@ -47,10 +47,10 @@ class ProductResource extends Resource
                     ->label(__('filament.resources.product.fields.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('baseUnit.unit_name')
-                    ->label(__('filament.resources.product.fields.base_unit_id'))
+                    ->label(__('filament.resources.product.fields.base_unit'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('other_units')
-                    ->label(__('Satuan Lainnya'))
+                    ->label(__('filament.resources.product.fields.other_units'))
                     ->getStateUsing(function ($record) {
                         $conversions = $record->units()
                             ->when($record->baseUnit, function ($query) use ($record) {

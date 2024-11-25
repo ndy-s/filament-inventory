@@ -4,8 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InventoryResource\Pages;
 use App\Models\Inventory;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -47,7 +45,7 @@ class InventoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('filament.resources.inventory.fields.product_id'))
+                    ->label(__('filament.resources.inventory.fields.product'))
                     ->numeric()
                     ->sortable()
                     ->searchable(),
@@ -57,7 +55,7 @@ class InventoryResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('product.baseUnit.unit_name')
-                    ->label(__('filament.resources.product.fields.base_unit_id'))
+                    ->label(__('filament.resources.product.fields.base_unit'))
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unit_conversions')
@@ -96,7 +94,8 @@ class InventoryResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('viewHistory')
                     ->label('Riwayat Transaksi')
-                    ->modalHeading('Riwayat Transaksi Produk')
+                    ->icon('heroicon-o-clock')
+                    ->modalHeading(fn ($record) => __('Riwayat Transaksi Produk: ') . $record->product->name)
                     ->modalWidth('4xl')
                     ->modalSubmitAction(false)
                     ->modalContent(function ($record) {
@@ -116,7 +115,6 @@ class InventoryResource extends Resource
                             'history' => $history,
                         ]);
                     })
-                    ->icon('heroicon-o-clock')
             ])
             ->bulkActions([
                 //

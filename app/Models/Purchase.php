@@ -71,7 +71,7 @@ class Purchase extends Model
                 ->disabled()
                 ->default(''),
             Select::make('supplier_id')
-                ->label(__('filament.resources.purchase.fields.supplier_id'))
+                ->label(__('filament.resources.purchase.fields.supplier'))
                 ->relationship('supplier', 'name')
                 ->createOptionForm(Supplier::getForm())
                 ->editOptionForm(Supplier::getForm())
@@ -87,7 +87,7 @@ class Purchase extends Model
                 ->directory('purchase')
                 ->image()
                 ->openable()
-                ->required(),
+                ->default(null),
         ];
     }
 }

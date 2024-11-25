@@ -16,8 +16,9 @@ return [
             'plural' => 'Daftar Produk',
             'fields' => [
                 'name' => 'Nama Produk',
-                'base_unit_id' => 'Satuan Dasar',
-                'base_unit_id_helper' => 'Pilih satuan dasar untuk produk ini, seperti kilogram, liter, atau unit.',
+                'base_unit' => 'Satuan Dasar',
+                'base_unit_helper' => 'Pilih satuan dasar untuk produk ini, seperti kilogram, liter, atau unit.',
+                'other_units' => 'Satuan Lainnya',
                 'notes' => 'Catatan Produk',
             ],
         ],
@@ -26,7 +27,7 @@ return [
             'singular' => 'Unit',
             'plural' => 'Daftar Unit',
             'fields' => [
-                'product_id' => 'Produk',
+                'product' => 'Produk',
                 'unit_name' => 'Nama Unit',
                 'conversion_factor' => 'Faktor Konversi',
                 'conversion_factor_helper' => 'Faktor untuk mengonversi unit ke satuan dasar.',
@@ -37,9 +38,18 @@ return [
             'singular' => 'Inventori',
             'plural' => 'Daftar Inventori',
             'fields' => [
-                'product_id' => 'Produk',
-                'purchase_item_id' => 'Item Pembelian',
+                'product' => 'Produk',
+                'purchase_item' => 'Item Pembelian',
                 'quantity' => 'Kuantitas',
+                'date' => 'Tanggal',
+                'type' => 'Jenis Transaksi',
+                'unit' => 'Unit',
+                'price_per_unit' => 'Harga Per Unit',
+                'total' => 'Total Harga',
+                'revenue' => 'Pendapatan',
+                'cogs' => 'Harga Pokok',
+                'gross_profit' => 'Laba Kotor',
+                'transaction_count' => 'Total Transaksi'
             ],
         ],
 
@@ -62,9 +72,11 @@ return [
             'plural' => 'Daftar Pembelian',
             'fields' => [
                 'code' => 'Kode Pembelian',
-                'supplier_id' => 'Pemasok',
+                'supplier' => 'Pemasok',
                 'date' => 'Tanggal Pembelian',
                 'invoice_image' => 'Gambar Faktur',
+                'total' => 'Total Pembelian',
+                'details_heading' => 'Rincian Pembelian',
             ],
         ],
         // Purchase Items
@@ -72,12 +84,13 @@ return [
             'singular' => 'Item Pembelian',
             'plural' => 'Daftar Item Pembelian',
             'fields' => [
-                'purchase_id' => 'Pembelian',
-                'product_id' => 'Produk',
+                'purchase' => 'Pembelian',
+                'product' => 'Produk',
                 'quantity' => 'Kuantitas',
-                'unit_id' => 'Unit',
+                'unit' => 'Unit',
                 'price_per_unit' => 'Harga Per Unit',
                 'discount' => 'Diskon',
+                'total' => 'Total Harga'
             ],
         ],
 
@@ -104,8 +117,10 @@ return [
             'plural' => 'Daftar Penjualan',
             'fields' => [
                 'code' => 'Kode Penjualan',
-                'customer_id' => 'Pelanggan',
+                'customer' => 'Pelanggan',
                 'date' => 'Tanggal Penjualan',
+                'total' => 'Total Penjualan',
+                'details_heading' => 'Rincian Penjualan',
             ],
         ],
         // Sales Items
@@ -113,12 +128,13 @@ return [
             'singular' => 'Item Penjualan',
             'plural' => 'Daftar Item Penjualan',
             'fields' => [
-                'sales_id' => 'Penjualan',
-                'product_id' => 'Produk',
+                'sales' => 'Penjualan',
+                'product' => 'Produk',
                 'quantity' => 'Kuantitas',
-                'unit_id' => 'Unit',
+                'unit' => 'Unit',
                 'price_per_unit' => 'Harga Per Unit',
                 'discount' => 'Diskon',
+                'total' => 'Total Harga'
             ],
         ],
     ],
@@ -134,6 +150,14 @@ return [
         'fields' => [
             'created_at' => 'Dibuat Pada',
             'updated_at' => 'Terakhir Diperbarui',
+            'details' => 'Rincian',
+            "na" => "N/A",
+        ],
+        'messages' => [
+            'no_items' => [
+                'title' => 'Tidak Ada Transaksi',
+                'description' => 'Belum ada item transaksi yang tercatat.',
+            ],
         ],
     ],
 ];

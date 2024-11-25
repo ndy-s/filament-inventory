@@ -77,8 +77,8 @@ class Product extends Model
                         ->required()
                         ->maxLength(255),
                     Select::make('base_unit_id')
-                        ->label(__('filament.resources.product.fields.base_unit_id'))
-                        ->helperText(__('filament.resources.product.fields.base_unit_id_helper'))
+                        ->label(__('filament.resources.product.fields.base_unit'))
+                        ->helperText(__('filament.resources.product.fields.base_unit_helper'))
                         ->relationship('baseUnit', 'unit_name', function ($query) {
                             $query->where('conversion_factor', 1);
                         })

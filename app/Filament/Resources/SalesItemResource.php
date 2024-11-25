@@ -47,7 +47,7 @@ class SalesItemResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('sales_id')
-                    ->label(__('filament.resources.sales_item.fields.sales_id'))
+                    ->label(__('filament.resources.sales_item.fields.sales'))
                     ->relationship('sales', 'code', function ($query) {
                         $query->orderBy('created_at', 'desc');
                     })
@@ -57,7 +57,7 @@ class SalesItemResource extends Resource
                     ->preload()
                     ->required(),
                 Forms\Components\Select::make('product_id')
-                    ->label(__('filament.resources.sales_item.fields.product_id'))
+                    ->label(__('filament.resources.sales_item.fields.product'))
                     ->relationship('product', 'name', function ($query) {
                         $query->whereNotNull('base_unit_id')
                             ->whereHas('baseUnit', function ($unitQuery) {
@@ -111,7 +111,7 @@ class SalesItemResource extends Resource
                         return 'No stock available.';
                     }),
                 Forms\Components\Select::make('unit_id')
-                    ->label(__('filament.resources.sales_item.fields.unit_id'))
+                    ->label(__('filament.resources.sales_item.fields.unit'))
                     ->relationship('unit', 'unit_name', function ($query) {
                         $query->where('conversion_factor', '>', 0)->orderBy('conversion_factor', 'asc');
                     })
@@ -158,12 +158,12 @@ class SalesItemResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('sales.code')
-                    ->label(__('filament.resources.sales_item.fields.sales_id'))
+                    ->label(__('filament.resources.sales_item.fields.sales'))
                     ->numeric()
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label(__('filament.resources.sales_item.fields.product_id'))
+                    ->label(__('filament.resources.sales_item.fields.product'))
                     ->numeric()
                     ->sortable()
                     ->searchable(),
@@ -173,7 +173,7 @@ class SalesItemResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unit.unit_name')
-                    ->label(__('filament.resources.sales_item.fields.unit_id'))
+                    ->label(__('filament.resources.sales_item.fields.unit'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price_per_unit')
                     ->label(__('filament.resources.sales_item.fields.price_per_unit'))

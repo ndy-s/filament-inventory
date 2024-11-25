@@ -69,7 +69,7 @@ class Sales extends Model
                 ->disabled()
                 ->default(''),
             Select::make('customer_id')
-                ->label(__('filament.resources.sales.fields.customer_id'))
+                ->label(__('filament.resources.sales.fields.customer'))
                 ->relationship('customer', 'name')
                 ->createOptionForm(Customer::getForm())
                 ->editOptionForm(Customer::getForm())
