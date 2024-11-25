@@ -87,6 +87,7 @@
                     <thead class="bg-gray-50 dark:bg-white/5">
                     <tr>
                         <th class="px-4 py-3 text-start text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.date') }}</th>
+                        <th class="px-4 py-3 text-start text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.code') }}</th>
                         <th class="px-4 py-3 text-start text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.type') }}</th>
                         <th class="px-4 py-3 text-end text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.quantity') }}</th>
                         <th class="px-4 py-3 text-start text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.unit') }}</th>
@@ -98,7 +99,10 @@
                     @forelse ($history as $item)
                         <tr>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                {{ \Carbon\Carbon::parse($item->transaction_date)->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($item->transaction_date ?? '')->format('d M Y') ?:  __('filament.general.fields.na') }}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-3 text-sm">
+                                {{ $item->code }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm">
                                 {{ $item->type }}

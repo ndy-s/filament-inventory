@@ -42,6 +42,7 @@ return [
                 'purchase_item' => 'Item Pembelian',
                 'quantity' => 'Kuantitas',
                 'date' => 'Tanggal',
+                'code' => 'Kode Transaksi',
                 'type' => 'Jenis Transaksi',
                 'unit' => 'Unit',
                 'price_per_unit' => 'Harga Per Unit',
