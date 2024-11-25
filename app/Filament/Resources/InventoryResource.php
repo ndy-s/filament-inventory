@@ -101,12 +101,12 @@ class InventoryResource extends Resource
                     ->modalContent(function ($record) {
                         $purchaseItems = $record->product->purchaseItems()
                             ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
-                            ->select('purchase_items.*', 'purchases.date as transaction_date', DB::raw("'Purchase' as type"))
+                            ->select('purchase_items.*', 'purchases.date as transaction_date', 'purchases.code as code', DB::raw("'Purchase' as type"))
                             ->get();
 
                         $salesItems = $record->product->salesItems()
                             ->join('sales', 'sales_items.sales_id', '=', 'sales.id')
-                            ->select('sales_items.*', 'sales.date as transaction_date', DB::raw("'Sale' as type"))
+                            ->select('sales_items.*', 'sales.date as transaction_date', 'sales.code as code', DB::raw("'Sale' as type"))
                             ->get();
 
                         $history = $purchaseItems->merge($salesItems)->sortByDesc('transaction_date');
