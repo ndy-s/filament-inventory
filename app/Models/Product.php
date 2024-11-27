@@ -42,9 +42,7 @@ class Product extends Model
     {
         static::deleting(function ($product) {
             if (
-                $product->purchases()->exists() ||
                 $product->purchaseItems()->exists() ||
-                $product->sales()->exists() ||
                 $product->salesItems()->exists() ||
                 $product->units()->exists()
             ) {
