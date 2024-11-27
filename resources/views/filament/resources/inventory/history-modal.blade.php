@@ -1,14 +1,39 @@
+@php
+    // Calculate all metrics once to avoid multiple iterations
+    $purchaseTotal = $history->where('type', 'Purchase')->sum(fn($item) => $item->quantity * $item->price_per_unit);
+    $salesTotal = $history->where('type', 'Sale')->sum(fn($item) => $item->quantity * $item->price_per_unit);
+
+    // Calculate total discounts
+    $purchaseDiscount = $history->where('type', 'Purchase')->sum('discount');
+    $salesDiscount = $history->where('type', 'Sale')->sum('discount');
+
+    // Apply discounts
+    $purchaseNetTotal = $purchaseTotal - $purchaseDiscount;
+    $salesNetTotal = $salesTotal - $salesDiscount;
+
+    // Gross profit calculation
+    $grossProfit = $salesNetTotal - $purchaseNetTotal;
+    $profitMargin = $salesNetTotal > 0 ? ($grossProfit / $salesNetTotal) * 100 : 0;
+
+   // Calculate the total quantity purchased in the lowest unit
+    $totalPurchased = $history->where('type', 'Purchase')->sum(function ($item) {
+        $conversionFactor = $item->unit ? $item->unit->conversion_factor : 1;
+        return $item->quantity * $conversionFactor;
+    });
+
+    // Calculate the total quantity sold in the lowest unit
+    $totalSold = $history->where('type', 'Sale')->sum(function ($item) {
+        $conversionFactor = $item->unit ? $item->unit->conversion_factor : 1;
+        return $item->quantity * $conversionFactor;
+    });
+
+    // Calculate the remaining stock in the lowest unit
+    $remainingStock = $totalPurchased - $totalSold;
+@endphp
+
 <div class="space-y-3">
     {{-- Compact Summary Cards --}}
-    <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-        @php
-            // Calculate all metrics once to avoid multiple iterations
-            $purchaseTotal = $history->where('type', 'Purchase')->sum(fn($item) => $item->quantity * $item->price_per_unit);
-            $salesTotal = $history->where('type', 'Sale')->sum(fn($item) => $item->quantity * $item->price_per_unit);
-            $grossProfit = $salesTotal - $purchaseTotal;
-            $profitMargin = $salesTotal > 0 ? ($grossProfit / $salesTotal) * 100 : 0;
-        @endphp
-
+    <div class="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {{-- Revenue Card --}}
         <div class="rounded-lg bg-white p-2 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
             <div class="flex items-center gap-x-2">
@@ -20,7 +45,7 @@
                 <div>
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('filament.resources.inventory.fields.revenue') }}</p>
                     <p class="text-sm font-semibold text-gray-900 dark:text-white">
-                        IDR {{ number_format($salesTotal, 0, ',', '.') }}
+                        IDR {{ number_format($salesNetTotal, 0, ',', '.') }}
                     </p>
                 </div>
             </div>
@@ -37,7 +62,7 @@
                 <div>
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('filament.resources.inventory.fields.cogs') }}</p>
                     <p class="text-sm font-semibold text-gray-900 dark:text-white">
-                        IDR {{ number_format($purchaseTotal, 0, ',', '.') }}
+                        IDR {{ number_format($purchaseNetTotal, 0, ',', '.') }}
                     </p>
                 </div>
             </div>
@@ -59,6 +84,24 @@
                         </p>
                         <span class="text-xs text-gray-500">({{ number_format($profitMargin, 1, ',', '.') }}%)</span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Total Lowest Unit Card --}}
+        <div class="rounded-lg bg-white p-2 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+            <div class="flex items-center gap-x-2">
+                <div class="rounded-md bg-yellow-50 p-1.5 dark:bg-yellow-500/10">
+                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m3-3v6m6-12h-3l-2 2H7L5 6H2m0 0v14h20V2"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('filament.resources.inventory.fields.total_lowest_unit') }}</p>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                        {{ number_format($remainingStock, 0, ',', '.') }}
+                        {{ $history->first()->unit ? $history->first()->unit->unit_name : __('Unknown Unit') }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -92,6 +135,7 @@
                         <th class="px-4 py-3 text-end text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.quantity') }}</th>
                         <th class="px-4 py-3 text-start text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.unit') }}</th>
                         <th class="px-4 py-3 text-end text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.price_per_unit') }}</th>
+                        <th class="px-4 py-3 text-end text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.discount') }}</th>
                         <th class="px-4 py-3 text-end text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('filament.resources.inventory.fields.total') }}</th>
                     </tr>
                     </thead>
@@ -116,13 +160,16 @@
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 text-end">
                                 Rp {{ number_format($item->price_per_unit, 2, ',', '.') }}
                             </td>
+                            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 text-end">
+                                Rp {{ number_format($item->discount, 2, ',', '.') }}
+                            </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm font-medium {{ $item->type === 'Purchase' ? 'text-custom-600 dark:text-custom-500' : 'text-info-600 dark:text-info-500'}} text-end">
-                                Rp {{ number_format($item->quantity * $item->price_per_unit, 2, ',', '.') }}
+                                Rp {{ number_format(($item->quantity * $item->price_per_unit) - $item->discount, 2, ',', '.') }}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-6 text-center">
+                            <td colspan="8" class="px-4 py-6 text-center">
                                 <div class="flex flex-col items-center justify-center gap-y-2">
                                     <div class="rounded-full bg-gray-100 p-3 dark:bg-gray-800">
                                         <svg class="h-6 w-6 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

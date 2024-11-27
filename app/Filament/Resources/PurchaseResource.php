@@ -67,7 +67,13 @@ class PurchaseResource extends Resource
                             return $item->quantity * $item->price_per_unit;
                         });
 
-                        return 'IDR ' . number_format($total, 2, ',', '.');
+                        $totalDiscount = $record->purchaseItems->sum(function ($item) {
+                            return $item->discount ?? 0;
+                        });
+
+                        $totalAfterDiscount = $total - $totalDiscount;
+
+                        return 'IDR ' . number_format($totalAfterDiscount, 2, ',', '.');
                     })
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('invoice_image')
@@ -105,7 +111,7 @@ class PurchaseResource extends Resource
                     ->label(__('filament.general.fields.details'))
                     ->icon('heroicon-o-eye')
                     ->modalHeading(__('filament.resources.purchase.fields.details_heading'))
-                    ->modalWidth('4xl')
+                    ->modalWidth('6xl')
                     ->modalSubmitAction(false)
                     ->modalContent(fn ($record) => view('filament.resources.purchase.purchase-details', [
                         'purchase' => $record,

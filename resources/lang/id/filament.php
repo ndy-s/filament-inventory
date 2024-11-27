@@ -46,10 +46,13 @@ return [
                 'type' => 'Jenis Transaksi',
                 'unit' => 'Unit',
                 'price_per_unit' => 'Harga Per Unit',
+                'other_units' => 'Satuan Lainnya',
+                'discount' => 'Diskon',
                 'total' => 'Total Harga',
                 'revenue' => 'Pendapatan',
                 'cogs' => 'Harga Pokok',
                 'gross_profit' => 'Laba Kotor',
+                'total_lowest_unit' => 'Stok Unit',
                 'transaction_count' => 'Total Transaksi'
             ],
         ],

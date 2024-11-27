@@ -49,30 +49,54 @@ class SalesItem extends Model
                 throw new \Exception('Product or unit not found.');
             }
 
-            // Fetch the existing record if it exists (for edit scenario)
+            // Fetch the original record if it exists (for edit scenario)
             $originalItem = $salesItem->getOriginal();
 
             $originalConvertedQuantity = 0;
-            if ($originalItem && isset($originalItem['quantity']) && isset($originalItem['unit_id'])) {
+            if ($originalItem) {
+                $originalProductId = $originalItem['product_id'];
                 $originalUnit = Unit::query()->find($originalItem['unit_id']);
+
                 if ($originalUnit) {
                     $originalConvertedQuantity = $originalItem['quantity'] * $originalUnit->conversion_factor;
                 }
+
+                // If the product is changed, adjust inventory for the original product
+                if ($originalProductId != $salesItem->product_id) {
+                    // Handle inventory addition for the original product
+                    $originalInventory = Inventory::query()->where('product_id', $originalProductId)->first();
+                    if ($originalInventory) {
+                        $originalInventory->quantity += $originalConvertedQuantity;
+                        $originalInventory->save();
+                    }
+
+                    // Handle inventory subtraction for the new product
+                    $newConvertedQuantity = $salesItem->quantity * $unit->conversion_factor;
+                    $newInventory = Inventory::query()->firstOrNew([
+                        'product_id' => $product->id,
+                    ]);
+
+                    $newInventory->quantity = ($newInventory->quantity ?? 0) - $newConvertedQuantity;
+
+                    if ($newInventory->quantity < 0) {
+                        throw new \Exception('Not enough inventory to complete the sale.');
+                    }
+
+                    $newInventory->save();
+
+                    return; // Exit since product has changed
+                }
             }
 
-            // Convert the new quantity to the base unit
+            // If product is not changed, calculate the difference
             $newConvertedQuantity = $salesItem->quantity * $unit->conversion_factor;
-
-            // Calculate the difference to update inventory
-            // If it's an edit, the difference should be the difference in the converted quantity
             $quantityDifference = $newConvertedQuantity - $originalConvertedQuantity;
 
-            // Update inventory (subtract from inventory since it's a sale)
+            // Update inventory for the same product
             $inventory = Inventory::query()->firstOrNew([
                 'product_id' => $product->id,
             ]);
 
-            // Deduct the quantityDifference from inventory
             $inventory->quantity = ($inventory->quantity ?? 0) - $quantityDifference;
 
             // Prevent negative inventory

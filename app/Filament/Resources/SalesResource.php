@@ -64,7 +64,13 @@ class SalesResource extends Resource
                             return $item->quantity * $item->price_per_unit;
                         });
 
-                        return 'IDR ' . number_format($total, 2, ',', '.');
+                        $totalDiscount = $record->salesItems->sum(function ($item) {
+                            return $item->discount ?? 0;
+                        });
+
+                        $totalAfterDiscount = $total - $totalDiscount;
+
+                        return 'IDR ' . number_format($totalAfterDiscount, 2, ',', '.');
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -87,7 +93,7 @@ class SalesResource extends Resource
                     ->label(__('filament.general.fields.details'))
                     ->icon('heroicon-o-eye')
                     ->modalHeading(__('filament.resources.purchase.fields.details_heading'))
-                    ->modalWidth('4xl')
+                    ->modalWidth('6xl')
                     ->modalSubmitAction(false)
                     ->modalContent(fn ($record) => view('filament.resources.sales.sales-details', [
                         'sales' => $record,

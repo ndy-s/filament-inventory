@@ -59,7 +59,7 @@ class InventoryResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unit_conversions')
-                    ->label(__('Sisa Produk (Satuan)'))
+                    ->label(__('filament.resources.inventory.fields.other_units'))
                     ->getStateUsing(function ($record) {
                         $conversions = $record->product->units()
                             ->orderBy('conversion_factor', 'asc')
@@ -96,7 +96,7 @@ class InventoryResource extends Resource
                     ->label('Riwayat Transaksi')
                     ->icon('heroicon-o-clock')
                     ->modalHeading(fn ($record) => __('Riwayat Transaksi Produk: ') . $record->product->name)
-                    ->modalWidth('4xl')
+                    ->modalWidth('6xl')
                     ->modalSubmitAction(false)
                     ->modalContent(function ($record) {
                         $purchaseItems = $record->product->purchaseItems()
@@ -109,7 +109,7 @@ class InventoryResource extends Resource
                             ->select('sales_items.*', 'sales.date as transaction_date', 'sales.code as code', DB::raw("'Sale' as type"))
                             ->get();
 
-                        $history = $purchaseItems->merge($salesItems)->sortByDesc('transaction_date');
+                        $history = collect()->concat($purchaseItems)->concat($salesItems)->sortByDesc('created_at');
 
                         return view('filament.resources.inventory.history-modal', [
                             'history' => $history,

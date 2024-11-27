@@ -41,7 +41,6 @@ class PurchaseItem extends Model
     protected static function booted(): void
     {
         static::saving(function ($purchaseItem) {
-            // Get the base unit conversion factor for the product and unit
             $product = $purchaseItem->product;
             $unit = $purchaseItem->unit;
 
@@ -49,29 +48,61 @@ class PurchaseItem extends Model
                 throw new \Exception('Product or unit not found.');
             }
 
-            // Fetch the existing record if it exists (for edit scenario)
+            // Fetch the original record if it exists (for edit scenario)
             $originalItem = $purchaseItem->getOriginal();
 
             $originalConvertedQuantity = 0;
-            if ($originalItem && isset($originalItem['quantity']) && isset($originalItem['unit_id'])) {
+            if ($originalItem) {
+                $originalProductId = $originalItem['product_id'];
                 $originalUnit = Unit::query()->find($originalItem['unit_id']);
+
                 if ($originalUnit) {
                     $originalConvertedQuantity = $originalItem['quantity'] * $originalUnit->conversion_factor;
                 }
+
+                // If the product is changed, adjust inventory for the original product
+                if ($originalProductId != $purchaseItem->product_id) {
+                    // Handle inventory reduction for the original product
+                    $originalInventory = Inventory::query()->where('product_id', $originalProductId)->first();
+                    if ($originalInventory) {
+                        $originalInventory->quantity -= $originalConvertedQuantity;
+
+                        // Delete if inventory is zero or less
+                        if ($originalInventory->quantity <= 0) {
+                            $originalInventory->delete();
+                        } else {
+                            $originalInventory->save();
+                        }
+                    }
+
+                    // Handle inventory addition for the new product
+                    $newConvertedQuantity = $purchaseItem->quantity * $unit->conversion_factor;
+                    $inventory = Inventory::query()->firstOrNew([
+                        'product_id' => $product->id,
+                    ]);
+
+                    $inventory->quantity = ($inventory->quantity ?? 0) + $newConvertedQuantity;
+
+                    // Prevent negative inventory
+                    if ($inventory->quantity < 0) {
+                        throw new \Exception('Inventory cannot have a negative quantity.');
+                    }
+
+                    $inventory->save();
+
+                    return; // Exit since product has changed
+                }
             }
 
-            // Convert the new quantity to the base unit
+            // If product is not changed, calculate the difference
             $newConvertedQuantity = $purchaseItem->quantity * $unit->conversion_factor;
-
-            // Calculate the difference to update inventory
             $quantityDifference = $newConvertedQuantity - $originalConvertedQuantity;
 
-            // Update inventory
+            // Update inventory for the same product
             $inventory = Inventory::query()->firstOrNew([
                 'product_id' => $product->id,
             ]);
 
-            // Add the difference to the inventory
             $inventory->quantity = ($inventory->quantity ?? 0) + $quantityDifference;
 
             // Prevent negative inventory

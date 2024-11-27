@@ -41,9 +41,10 @@ class Sales extends Model
     protected static function booted(): void
     {
         static::creating(function ($sales) {
-            $sales->code = 'SAL/' . now()->format('dmy') . '/' . str_pad($sales->supplier_id, 2, '0', STR_PAD_LEFT) . '/' . strtoupper(Str::random(3));
+            $sales->code = 'SAL/' . now()->format('my') . '/' . str_pad($sales->customer_id, 2, '0', STR_PAD_LEFT) . '/' . strtoupper(Str::random(3));
         });
     }
+
 
     public function salesItems(): HasMany
     {
