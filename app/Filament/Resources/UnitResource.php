@@ -83,6 +83,7 @@ class UnitResource extends Resource
                 ]),
             ])
             ->defaultSort(fn ($query) => $query
+                ->select('units.*', 'products.name as product_name')
                 ->join('products', 'units.product_id', '=', 'products.id')
                 ->orderBy('products.name')
                 ->orderBy('conversion_factor')

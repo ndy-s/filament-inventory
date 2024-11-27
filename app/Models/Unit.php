@@ -37,10 +37,10 @@ class Unit extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (Unit $unit) {
+        static::updating(function (Unit $unit) {
             if ($unit->isDirty('conversion_factor')) {
                 if ($unit->purchaseItems()->exists() || $unit->salesItems()->exists()) {
-                    throw new \Exception(__('The conversion factor for this unit cannot be updated because it has been used in transactions.'));
+                    throw new Exception(__('The conversion factor for this unit cannot be updated because it has been used in transactions.'));
                 }
             }
         });
