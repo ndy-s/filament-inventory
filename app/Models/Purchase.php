@@ -27,6 +27,7 @@ class Purchase extends Model
         'supplier_id',
         'date',
         'invoice_image',
+        'is_locked',
     ];
 
     /**

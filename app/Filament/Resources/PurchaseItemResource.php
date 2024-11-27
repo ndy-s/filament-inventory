@@ -48,7 +48,7 @@ class PurchaseItemResource extends Resource
                 Forms\Components\Select::make('purchase_id')
                     ->label(__('filament.resources.purchase_item.fields.purchase'))
                     ->relationship('purchase', 'code', function ($query) {
-                        $query->orderBy('created_at', 'desc');
+                        $query->where('is_locked', 0)->orderBy('created_at', 'desc');
                     })
                     ->createOptionForm(Purchase::getForm())
                     ->editOptionForm(Purchase::getForm())

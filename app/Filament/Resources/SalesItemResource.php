@@ -49,7 +49,7 @@ class SalesItemResource extends Resource
                 Forms\Components\Select::make('sales_id')
                     ->label(__('filament.resources.sales_item.fields.sales'))
                     ->relationship('sales', 'code', function ($query) {
-                        $query->orderBy('created_at', 'desc');
+                        $query->where('is_locked', 0)->orderBy('created_at', 'desc');
                     })
                     ->createOptionForm(Sales::getForm())
                     ->editOptionForm(Sales::getForm())

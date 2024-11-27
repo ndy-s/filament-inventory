@@ -73,6 +73,16 @@ class SalesResource extends Resource
                         return 'IDR ' . number_format($totalAfterDiscount, 2, ',', '.');
                     })
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_locked')
+                    ->label(__('filament.resources.sales.fields.lock_status'))
+                    ->icon(fn (string $state): string => match ($state) {
+                        '0' => 'heroicon-o-lock-open',
+                        '1' => 'heroicon-o-lock-closed',
+                    })
+                    ->boolean()
+                    ->alignCenter()
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()
@@ -92,20 +102,31 @@ class SalesResource extends Resource
                 Tables\Actions\Action::make('details')
                     ->label(__('filament.general.fields.details'))
                     ->icon('heroicon-o-eye')
-                    ->modalHeading(__('filament.resources.purchase.fields.details_heading'))
+                    ->modalHeading(__('filament.resources.sales.fields.details_heading'))
                     ->modalWidth('6xl')
                     ->modalSubmitAction(false)
                     ->modalContent(fn ($record) => view('filament.resources.sales.sales-details', [
                         'sales' => $record,
                         'salesItems' => $record->salesItems,
                     ])),
+                Tables\Actions\Action::make('toggleLock')
+                    ->label(__('filament.resources.sales.actions.toggle_lock'))
+                    ->icon('heroicon-o-lock-closed')
+                    ->action(function ($record) {
+                        $record->update([
+                            'is_locked' => !$record->is_locked,
+                        ]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading(__('filament.resources.sales.actions.confirm_lock_unlock'))
+                    ->modalDescription(__('filament.resources.sales.actions.lock_unlock_description')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort(fn ($query) => $query->orderBy('date', 'desc')->orderBy('created_at', 'desc'));
     }
 
     public static function getRelations(): array

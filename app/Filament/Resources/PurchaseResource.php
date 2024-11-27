@@ -91,6 +91,16 @@ class PurchaseResource extends Resource
                     ->openUrlInNewTab(function ($record) {
                         return (bool)$record->invoice_image;
                     }),
+                Tables\Columns\IconColumn::make('is_locked')
+                    ->label(__('filament.resources.purchase.fields.lock_status'))
+                    ->icon(fn (string $state): string => match ($state) {
+                        '0' => 'heroicon-o-lock-open',
+                        '1' => 'heroicon-o-lock-closed',
+                    })
+                    ->boolean()
+                    ->alignCenter()
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.general.fields.created_at'))
                     ->dateTime()
@@ -117,13 +127,24 @@ class PurchaseResource extends Resource
                         'purchase' => $record,
                         'purchaseItems' => $record->purchaseItems,
                     ])),
+                Tables\Actions\Action::make('toggleLock')
+                    ->label(__('filament.resources.purchase.actions.toggle_lock'))
+                    ->icon('heroicon-o-lock-closed')
+                    ->action(function ($record) {
+                        $record->update([
+                            'is_locked' => !$record->is_locked,
+                        ]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading(__('filament.resources.purchase.actions.confirm_lock_unlock'))
+                    ->modalDescription(__('filament.resources.purchase.actions.lock_unlock_description')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort(fn ($query) => $query->orderBy('date', 'desc')->orderBy('created_at', 'desc'));
     }
 
     public static function getRelations(): array

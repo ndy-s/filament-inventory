@@ -46,7 +46,10 @@ class InventoryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
                     ->label(__('filament.resources.inventory.fields.product'))
-                    ->numeric()
+                    ->formatStateUsing(function ($state, $record) {
+                        $notes = $record->product->notes ? strip_tags($record->product->notes) : '';
+                        return $state . ($notes ? " ({$notes})" : '');
+                    })
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('quantity')
@@ -109,7 +112,13 @@ class InventoryResource extends Resource
                             ->select('sales_items.*', 'sales.date as transaction_date', 'sales.code as code', DB::raw("'Sale' as type"))
                             ->get();
 
-                        $history = collect()->concat($purchaseItems)->concat($salesItems)->sortByDesc('created_at');
+                        $history = collect()
+                            ->concat($purchaseItems)
+                            ->concat($salesItems)
+                            ->sortBy([
+                                ['transaction_date', 'desc'],
+                                ['created_at', 'desc'],
+                            ]);
 
                         return view('filament.resources.inventory.history-modal', [
                             'history' => $history,

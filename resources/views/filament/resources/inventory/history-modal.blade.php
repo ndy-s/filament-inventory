@@ -100,7 +100,7 @@
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('filament.resources.inventory.fields.total_lowest_unit') }}</p>
                     <p class="text-sm font-semibold text-gray-900 dark:text-white">
                         {{ number_format($remainingStock, 0, ',', '.') }}
-                        {{ $history->first()->unit ? $history->first()->unit->unit_name : __('Unknown Unit') }}
+                        {{ $history->first()->product && $history->first()->product->baseUnit ? $history->first()->product->baseUnit->unit_name : '' }}
                     </p>
                 </div>
             </div>

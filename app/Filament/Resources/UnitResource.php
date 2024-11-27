@@ -47,7 +47,10 @@ class UnitResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('product.name')
                     ->label(__('filament.resources.unit.fields.product'))
-                    ->numeric()
+                    ->formatStateUsing(function ($state, $record) {
+                        $notes = $record->product->notes ? strip_tags($record->product->notes) : '';
+                        return $state . ($notes ? " ({$notes})" : '');
+                    })
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unit_name')

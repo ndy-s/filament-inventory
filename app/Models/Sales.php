@@ -25,6 +25,7 @@ class Sales extends Model
         'code',
         'customer_id',
         'date',
+        'is_locked',
     ];
 
     /**

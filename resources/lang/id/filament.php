@@ -79,9 +79,15 @@ return [
                 'supplier' => 'Pemasok',
                 'date' => 'Tanggal Pembelian',
                 'invoice_image' => 'Gambar Faktur',
+                'lock_status' => 'Status',
                 'total' => 'Total Pembelian',
                 'details_heading' => 'Rincian Pembelian',
             ],
+            'actions' => [
+                'toggle_lock' => 'Ubah Status',
+                'confirm_lock_unlock' => 'Konfirmasi Kunci/Buka Kunci',
+                'lock_unlock_description' => 'Apakah Anda yakin ingin mengubah status kunci?',
+            ]
         ],
         // Purchase Items
         'purchase_item' => [
@@ -124,8 +130,14 @@ return [
                 'customer' => 'Pelanggan',
                 'date' => 'Tanggal Penjualan',
                 'total' => 'Total Penjualan',
+                'lock_status' => 'Status',
                 'details_heading' => 'Rincian Penjualan',
             ],
+            'actions' => [
+                'toggle_lock' => 'Ubah Status',
+                'confirm_lock_unlock' => 'Konfirmasi Kunci/Buka Kunci',
+                'lock_unlock_description' => 'Apakah Anda yakin ingin mengubah status kunci?',
+            ]
         ],
         // Sales Items
         'sales_item' => [
