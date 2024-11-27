@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -45,6 +46,12 @@ class Purchase extends Model
     {
         static::creating(function ($purchase) {
             $purchase->code = 'PUR/' . now()->format('my') . '/' . str_pad($purchase->supplier_id, 2, '0', STR_PAD_LEFT) . '/' . strtoupper(Str::random(3));
+        });
+
+        static::deleting(function ($purchase) {
+            if ($purchase->purchaseItems()->exists()) {
+                throw new ModelNotFoundException(__('Purchase cannot be deleted because it has associated items.'));
+            }
         });
     }
 
