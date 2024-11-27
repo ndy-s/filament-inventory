@@ -99,16 +99,6 @@ class SalesResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('details')
-                    ->label(__('filament.general.fields.details'))
-                    ->icon('heroicon-o-eye')
-                    ->modalHeading(__('filament.resources.sales.fields.details_heading'))
-                    ->modalWidth('6xl')
-                    ->modalSubmitAction(false)
-                    ->modalContent(fn ($record) => view('filament.resources.sales.sales-details', [
-                        'sales' => $record,
-                        'salesItems' => $record->salesItems,
-                    ])),
                 Tables\Actions\Action::make('toggleLock')
                     ->label(__('filament.resources.sales.actions.toggle_lock'))
                     ->icon('heroicon-o-lock-closed')
@@ -120,6 +110,16 @@ class SalesResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading(__('filament.resources.sales.actions.confirm_lock_unlock'))
                     ->modalDescription(__('filament.resources.sales.actions.lock_unlock_description')),
+                Tables\Actions\Action::make('details')
+                    ->label(__('filament.general.fields.details'))
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading(__('filament.resources.sales.fields.details_heading'))
+                    ->modalWidth('6xl')
+                    ->modalSubmitAction(false)
+                    ->modalContent(fn ($record) => view('filament.resources.sales.sales-details', [
+                        'sales' => $record,
+                        'salesItems' => $record->salesItems,
+                    ])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

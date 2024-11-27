@@ -117,16 +117,6 @@ class PurchaseResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('details')
-                    ->label(__('filament.general.fields.details'))
-                    ->icon('heroicon-o-eye')
-                    ->modalHeading(__('filament.resources.purchase.fields.details_heading'))
-                    ->modalWidth('6xl')
-                    ->modalSubmitAction(false)
-                    ->modalContent(fn ($record) => view('filament.resources.purchase.purchase-details', [
-                        'purchase' => $record,
-                        'purchaseItems' => $record->purchaseItems,
-                    ])),
                 Tables\Actions\Action::make('toggleLock')
                     ->label(__('filament.resources.purchase.actions.toggle_lock'))
                     ->icon('heroicon-o-lock-closed')
@@ -138,6 +128,16 @@ class PurchaseResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading(__('filament.resources.purchase.actions.confirm_lock_unlock'))
                     ->modalDescription(__('filament.resources.purchase.actions.lock_unlock_description')),
+                Tables\Actions\Action::make('details')
+                    ->label(__('filament.general.fields.details'))
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading(__('filament.resources.purchase.fields.details_heading'))
+                    ->modalWidth('6xl')
+                    ->modalSubmitAction(false)
+                    ->modalContent(fn ($record) => view('filament.resources.purchase.purchase-details', [
+                        'purchase' => $record,
+                        'purchaseItems' => $record->purchaseItems,
+                    ])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
