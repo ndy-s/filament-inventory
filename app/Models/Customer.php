@@ -6,6 +6,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Customer extends Model
@@ -37,6 +38,15 @@ class Customer extends Model
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function ($customer) {
+            if ($customer->sales()->exists()) {
+                throw new ModelNotFoundException(__('Customer cannot be deleted because it has associated sales.'));
+            }
+        });
+    }
 
     public function sales(): HasMany
     {

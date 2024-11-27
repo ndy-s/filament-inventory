@@ -6,6 +6,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
@@ -33,6 +34,16 @@ class Supplier extends Model
     protected $casts = [
         'id' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function ($supplier) {
+            if ($supplier->purchases()->exists()) {
+                throw new ModelNotFoundException(__('Supplier cannot be deleted because it has associated purchases.'));
+            }
+        });
+    }
+
 
     public function purchases(): HasMany
     {

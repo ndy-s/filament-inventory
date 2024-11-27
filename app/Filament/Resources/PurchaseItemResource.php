@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PurchaseItemResource\Pages;
-use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
@@ -104,7 +103,7 @@ class PurchaseItemResource extends Resource
                         return Unit::query()
                             ->where('product_id', $productId)
                             ->where('conversion_factor', '>', 0)
-                            ->orderBy('conversion_factor', 'asc')
+                            ->orderBy('conversion_factor')
                             ->get()
                             ->mapWithKeys(function ($unit) {
                                 return [$unit->id => $unit->unit_name . ' (' . $unit->product->name . ')'];

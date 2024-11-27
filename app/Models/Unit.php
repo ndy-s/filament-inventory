@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Exception;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Unit extends Model
 {
@@ -33,10 +35,38 @@ class Unit extends Model
         'product_id' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::updating(function (Unit $unit) {
+            if ($unit->isDirty('conversion_factor')) {
+                if ($unit->purchaseItems()->exists() || $unit->salesItems()->exists()) {
+                    throw new Exception(__('The conversion factor for this unit cannot be updated because it has been used in transactions.'));
+                }
+            }
+        });
+
+        static::deleting(function (Unit $unit) {
+            if ($unit->purchaseItems()->exists() || $unit->salesItems()->exists()) {
+                throw new Exception(__('This unit is used in other transactions and cannot be deleted.'));
+            }
+        });
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function purchaseItems(): HasMany
+    {
+        return $this->hasMany(PurchaseItem::class);
+    }
+
+    public function salesItems(): HasMany
+    {
+        return $this->hasMany(SalesItem::class);
+    }
+
 
     public static function getForm(): array
     {
@@ -60,7 +90,6 @@ class Unit extends Model
                 ->options(function () {
                     return Product::all()->mapWithKeys(function ($product) {
                         $notes = $product->notes ? strip_tags($product->notes) : null;
-
                         $label = $notes ? $product->name . ' (' . $notes . ')' : $product->name;
 
                         return [$product->id => $label];

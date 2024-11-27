@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UnitResource\Pages;
 use App\Models\Unit;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -49,7 +48,7 @@ class UnitResource extends Resource
                     ->label(__('filament.resources.unit.fields.product'))
                     ->formatStateUsing(function ($state, $record) {
                         $notes = $record->product->notes ? strip_tags($record->product->notes) : '';
-                        return $state . ($notes ? " ({$notes})" : '');
+                        return $state . ($notes ? " ($notes)" : '');
                     })
                     ->sortable()
                     ->searchable(),
@@ -83,7 +82,12 @@ class UnitResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('product.name', 'asc');
+            ->defaultSort(fn ($query) => $query
+                ->join('products', 'units.product_id', '=', 'products.id')
+                ->orderBy('products.name')
+                ->orderBy('conversion_factor')
+            );
+
     }
 
     public static function getRelations(): array

@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -36,6 +37,21 @@ class Product extends Model
         'id' => 'integer',
         'base_unit_id' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function ($product) {
+            if (
+                $product->purchases()->exists() ||
+                $product->purchaseItems()->exists() ||
+                $product->sales()->exists() ||
+                $product->salesItems()->exists() ||
+                $product->units()->exists()
+            ) {
+                throw new ModelNotFoundException(__('Product cannot be deleted because it has associated records.'));
+            }
+        });
+    }
 
     public function baseUnit(): BelongsTo
     {
