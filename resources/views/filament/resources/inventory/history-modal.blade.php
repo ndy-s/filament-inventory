@@ -143,7 +143,7 @@
                     @forelse ($history as $item)
                         <tr>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                {{ \Carbon\Carbon::parse($item->transaction_date ?? '')->format('d M Y') ?:  __('filament.general.fields.na') }}
+                                {{ $item->transaction_date ? \Carbon\Carbon::parse($item->transaction_date)->format('d M Y') : __('filament.general.fields.na') }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm">
                                 {{ $item->code }}
@@ -155,7 +155,7 @@
                                 {{ number_format($item->quantity, 0, ',', '.') }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                {{ $item->unit->unit_name ?? 'Tidak Ada' }}
+                                {{ $item->unit->unit_name ?? '-' }}
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 text-end">
                                 Rp {{ number_format($item->price_per_unit, 2, ',', '.') }}
