@@ -35,11 +35,12 @@ class SalesProfitReport extends Page
             ->join('units as sales_units', 'sales_items.unit_id', '=', 'sales_units.id')
             ->select(
                 DB::raw('DATE_FORMAT(sales.date, "%d %M %Y") as formatted_date'),
+                'sales.date',
                 'products.name as product_name',
                 DB::raw('SUM(sales_items.quantity * sales_units.conversion_factor) as total_quantity_in_base_unit'),
                 DB::raw('SUM((sales_items.quantity * sales_items.price_per_unit) - sales_items.discount) as revenue')
             )
-            ->groupBy('formatted_date', 'products.name')
+            ->groupBy('sales.date', 'formatted_date', 'products.name')
             ->orderBy('sales.date', 'desc')
             ->get();
     }
